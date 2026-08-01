@@ -415,14 +415,33 @@ section.section.alt { background: var(--bg-alt); }
 }
 .cfg-option.disabled { opacity: 0.4; cursor: not-allowed; }
 .cfg-option.disabled input { cursor: not-allowed; }
-.cfg-option .thumb {
-  width: 64px;
-  height: 64px;
+.cfg-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+.cfg-gallery figure {
+  margin: 0;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.cfg-gallery img {
+  width: 100%;
+  height: 180px;
   object-fit: cover;
-  border-radius: 4px;
-  margin-right: 0.75rem;
-  flex-shrink: 0;
+  display: block;
   background: #f4f4f4;
+}
+.cfg-gallery figcaption {
+  padding: 0.6rem 0.8rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  color: var(--text, #222);
 }
 .cfg-option .tag {
   font-size: 0.75rem;
