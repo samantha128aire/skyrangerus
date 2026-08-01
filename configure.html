@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configurator — SkyRanger US</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/favicon.png">
+<link rel="stylesheet" href="assets/style.css?v=4">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="logo">SkyRanger US</a>
+    <button class="nav-hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="aircraft.html">Aircraft</a></li>
+      <li><a href="achievements.html">Achievements</a></li>
+      <li><a href="configure.html">Pricing</a></li>
+      <li class="dropdown">
+        <span>Builders/Owners ▾</span>
+        <ul class="submenu">
+          <li><a href="builder-logs.html">Builder Logs</a></li>
+          <li><a href="videos.html">Videos</a></li>
+          <li><a href="demo-skyranger-ninja.html">Demo Skyranger Ninja</a></li>
+          <li><a href="dick-halls-v-max.html">Dick Hall's V-MAX</a></li>
+        </ul>
+      </li>
+      <li><a href="contact-us.html">Contact Us</a></li>
+      <li><a href="#" class="cart">0</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section class="section">
+  <div class="container">
+    <h1 style="text-align:center;margin-bottom:1rem;">Build Your SkyRanger</h1>
+
+    <div class="cfg-header">
+      Aircraft kits include international shipping to the U.S. (FOR PLANNING PURPOSES ONLY) — updated March 2024.
+    </div>
+
+    <div class="configurator">
+      <div>
+        <!-- Aircraft -->
+        <div class="cfg-section">
+          <h3>Airplane Kit</h3>
+          <div class="cfg-options">
+            <label class="cfg-option">
+              <input type="radio" name="aircraft" value="swift3" data-price="29670" data-label="Swift 3 Kit">
+              <span class="name">Swift 3 Kit</span>
+              <span class="price">$29,670</span>
+            </label>
+            <label class="cfg-option">
+              <input type="radio" name="aircraft" value="nynja" data-price="34995" data-label="Nynja Kit">
+              <span class="name">Nynja Kit</span>
+              <span class="price">$34,995</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Engine -->
+        <div class="cfg-section">
+          <h3>Engine</h3>
+          <div class="cfg-options">
+            <label class="cfg-option">
+              <input type="radio" name="engine" value="912ul" data-price="23151" data-label="Rotax 912 UL (80 HP)">
+              <span class="name">Rotax 912 UL (80 HP)</span>
+              <span class="price">$23,151</span>
+            </label>
+            <label class="cfg-option">
+              <input type="radio" name="engine" value="912uls" data-price="26909" data-label="Rotax 912 ULS (100 HP)">
+              <span class="name">Rotax 912 ULS (100 HP)</span>
+              <span class="price">$26,909</span>
+            </label>
+            <label class="cfg-option">
+              <input type="radio" name="engine" value="none" data-price="0" data-label="Engine not required">
+              <span class="name">Engine not required</span>
+              <span class="price">$0</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Engine Install Kit -->
+        <div class="cfg-section">
+          <h3>Engine Installation Kit</h3>
+          <div class="cfg-options">
+            <label class="cfg-option">
+              <input type="radio" name="engine_kit" value="yes" data-price="910" data-label="Engine Installation Kit">
+              <span class="name">Yes</span>
+              <span class="price">$910</span>
+            </label>
+            <label class="cfg-option">
+              <input type="radio" name="engine_kit" value="no" data-price="0" data-label="No Engine Installation Kit">
+              <span class="name">No</span>
+              <span class="price">$0</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Propeller -->
+        <div class="cfg-section">
+          <h3>Propeller</h3>
+          <div class="cfg-options">
+            <label class="cfg-option">
+              <input type="radio" name="prop" value="propspin" data-price="1862" data-label="Prop &amp; Spinner">
+              <span class="name">Prop &amp; Spinner</span>
+              <span class="price">$1,862</span>
+            </label>
+            <label class="cfg-option">
+              <input type="radio" name="prop" value="none" data-price="0" data-label="Prop not required">
+              <span class="name">Prop not required</span>
+              <span class="price">$0</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Instruments -->
+        <div class="cfg-section">
+          <h3>Instruments</h3>
+          <div class="cfg-options">
+            <label class="cfg-option">
+              <input type="checkbox" name="opt" value="inst_pack" data-price="2072" data-label="Instrument Pack">
+              <span class="name">Instrument Pack</span>
+              <span class="price">$2,072</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Options -->
+        <div class="cfg-section">
+          <h3>Options</h3>
+          <div class="cfg-options">
+
+            <label class="cfg-option" data-swift-only="1">
+              <input type="checkbox" name="opt" value="fuel_filler" data-price="210" data-label="Remote Fuel Filler" data-swift="1">
+              <span class="name">Remote Fuel Filler</span>
+              <span class="tag">Swift only</span>
+              <span class="price">$210</span>
+            </label>
+
+            <label class="cfg-option" data-swift-only="1">
+              <input type="checkbox" name="opt" value="composite_seats" data-price="770" data-label="Composite Seats and Covers" data-swift="1">
+              <span class="name">Composite Seats and Covers</span>
+              <span class="tag">Swift only</span>
+              <span class="price">$770</span>
+            </label>
+
+            <label class="cfg-option" data-swift-only="1">
+              <input type="checkbox" name="opt" value="strut_end" data-price="98" data-label="Strut End Fairings" data-swift="1">
+              <span class="name">Strut End Fairings</span>
+              <span class="tag">Swift only</span>
+              <span class="price">$98</span>
+            </label>
+
+            <label class="cfg-option" data-swift-only="1">
+              <input type="checkbox" name="opt" value="wingtip_winglet" data-price="525" data-label="Wingtip Fairings — Winglet type" data-swift="1">
+              <span class="name">Wingtip Fairings — Winglet type</span>
+              <span class="tag">Swift only</span>
+              <span class="price">$525</span>
+            </label>
+
+            <label class="cfg-option" data-swift-only="1">
+              <input type="checkbox" name="opt" value="wingtip_std" data-price="224" data-label="Wingtip Fairings — Standard" data-swift="1">
+              <span class="name">Wingtip Fairings — Standard</span>
+              <span class="tag">Swift only</span>
+              <span class="price">$224</span>
+            </label>
+
+            <label class="cfg-option" data-swift-only="1">
+              <input type="checkbox" name="opt" value="tinted_glazing" data-price="140" data-label="Tinted Glazing" data-swift="1">
+              <span class="name">Tinted Glazing</span>
+              <span class="tag">Swift only</span>
+              <span class="price">$140</span>
+            </label>
+
+            <label class="cfg-option" data-swift-only="1">
+              <input type="checkbox" name="opt" value="luggage_hammock" data-price="140" data-label="Luggage Hammock" data-swift="1">
+              <span class="name">Luggage Hammock</span>
+              <span class="tag">Swift only</span>
+              <span class="price">$140</span>
+            </label>
+
+            <label class="cfg-option">
+              <input type="checkbox" name="opt" value="wing_fuel" data-price="3147" data-label="Wing Fuel Tanks System">
+              <span class="name">Wing Fuel Tanks System</span>
+              <span class="price">$3,147</span>
+            </label>
+
+            <label class="cfg-option">
+              <input type="checkbox" name="opt" value="luggage_box" data-price="375" data-label="Luggage Box" data-requires="wing_fuel">
+              <span class="name">Luggage Box <small style="font-weight:400;color:var(--muted);">(requires Wing Fuel Tanks)</small></span>
+              <span class="price">$375</span>
+            </label>
+
+            <label class="cfg-option">
+              <input type="checkbox" name="opt" value="bush_tires" data-price="1100" data-label="Bush Tires &amp; Nosewheel Fork">
+              <span class="name">Bush Tires &amp; Nosewheel Fork</span>
+              <span class="price">$1,100</span>
+            </label>
+
+            <label class="cfg-option">
+              <input type="checkbox" name="opt" value="beringer" data-price="2450" data-label="Beringer Wheels &amp; Brakes">
+              <span class="name">Beringer Wheels &amp; Brakes</span>
+              <span class="price">$2,450</span>
+            </label>
+
+            <label class="cfg-option">
+              <input type="checkbox" name="opt" value="thermal_screen" data-price="210" data-label="Thermal Screen">
+              <span class="name">Thermal Screen</span>
+              <span class="price">$210</span>
+            </label>
+
+            <label class="cfg-option">
+              <input type="checkbox" name="opt" value="carpet_set" data-price="140" data-label="Carpet Set">
+              <span class="name">Carpet Set</span>
+              <span class="price">$140</span>
+            </label>
+
+            <label class="cfg-option">
+              <input type="checkbox" name="opt" value="wing_fold" data-price="910" data-label="Wing Fold Kit">
+              <span class="name">Wing Fold Kit</span>
+              <span class="price">$910</span>
+            </label>
+
+            <label class="cfg-option">
+              <input type="checkbox" name="opt" value="wheel_spats" data-price="672" data-label="Wheel Spats (Pants)">
+              <span class="name">Wheel Spats (Pants)</span>
+              <span class="price">$672</span>
+            </label>
+
+            <label class="cfg-option">
+              <input type="checkbox" name="opt" value="prop_covers" data-price="56" data-label="Propeller Covers">
+              <span class="name">Propeller Covers</span>
+              <span class="price">$56</span>
+            </label>
+
+            <label class="cfg-option">
+              <input type="checkbox" name="opt" value="carb_heat" data-price="266" data-label="Carburetor Heat">
+              <span class="name">Carburetor Heat</span>
+              <span class="price">$266</span>
+            </label>
+
+            <label class="cfg-option">
+              <input type="checkbox" name="opt" value="cabin_heat" data-price="420" data-label="Cabin Heat">
+              <span class="name">Cabin Heat</span>
+              <span class="price">$420</span>
+            </label>
+
+            <label class="cfg-option">
+              <input type="checkbox" name="opt" value="two_piece_door" data-price="350" data-label="2 Piece Door">
+              <span class="name">2 Piece Door</span>
+              <span class="price">$350</span>
+            </label>
+
+            <label class="cfg-option" data-nynja-only="1">
+              <input type="checkbox" name="opt" value="xlam_nynja" data-price="840" data-label="Xlam Covering (Nynja)" data-nynja="1">
+              <span class="name">Xlam Covering</span>
+              <span class="tag">Nynja only</span>
+              <span class="price">$840</span>
+            </label>
+
+            <label class="cfg-option" data-swift-only="1">
+              <input type="checkbox" name="opt" value="xlam_swift" data-price="1680" data-label="Xlam Covering (Swift 3)" data-swift="1">
+              <span class="name">Xlam Covering</span>
+              <span class="tag">Swift 3 only</span>
+              <span class="price">$1,680</span>
+            </label>
+
+          </div>
+        </div>
+
+        <!-- Delivery -->
+        <div class="cfg-section">
+          <h3>Delivery</h3>
+          <div class="cfg-options">
+            <label class="cfg-option">
+              <input type="radio" name="delivery" value="ship" data-price="1000" data-label="Shipping to you (estimate)">
+              <span class="name">Shipping to you <small style="font-weight:400;color:var(--muted);">(TBD, ~$1,000 est.)</small></span>
+              <span class="price">$1,000</span>
+            </label>
+            <label class="cfg-option">
+              <input type="radio" name="delivery" value="pickup" data-price="0" data-label="Customer will pick-up order">
+              <span class="name">Customer will pick-up order</span>
+              <span class="price">$0</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary sidebar -->
+      <aside class="cfg-summary">
+        <h3>Your SkyRanger</h3>
+        <div class="items" id="cfg-items">
+          <div class="empty">Select options to see your build.</div>
+        </div>
+        <div class="total">
+          <span>Total</span>
+          <span id="cfg-total">$0</span>
+        </div>
+        <a href="contact-us.html" class="btn" id="cfg-quote">Request Quote</a>
+        <div class="note">For planning purposes only — prices updated March 2024.</div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div>
+      <h4>Props Aviation @ 0TE4</h4>
+      <div class="addr">
+        Hilltop Lakes TX 77871<br>
+        (936) 444-2869
+      </div>
+    </div>
+    <div>
+      <h4>Our Work</h4>
+      <a href="aircraft.html">Aircraft</a><br>
+      <a href="achievements.html">Achievements</a><br>
+      <a href="contact-us.html">Contact</a>
+    </div>
+    <div>
+      <h4>Follow</h4>
+      <div class="social">
+        <a href="https://www.facebook.com/skyrangerus" target="_blank" rel="noopener">Facebook</a>
+        <a href="https://www.instagram.com/skyrangerus/" target="_blank" rel="noopener">Instagram</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/main.js"></script>
+<script>
+(function () {
+  const items   = document.getElementById('cfg-items');
+  const totalEl = document.getElementById('cfg-total');
+  const quoteBtn = document.getElementById('cfg-quote');
+  const inputs = document.querySelectorAll('.cfg-option input');
+
+  function fmt(n) { return '$' + Number(n).toLocaleString('en-US'); }
+
+  function applyLocks() {
+    // Determine aircraft
+    const aircraft = document.querySelector('input[name="aircraft"]:checked');
+    const val = aircraft ? aircraft.value : null;
+    const isSwift = val === 'swift3';
+    const isNynja = val === 'nynja';
+
+    document.querySelectorAll('.cfg-option').forEach(function (label) {
+      const swiftOnly = label.dataset.swiftOnly === '1';
+      const nynjaOnly = label.dataset.nynjaOnly === '1';
+      const input = label.querySelector('input');
+      if (!input) return;
+
+      let disabled = false;
+      if (swiftOnly && val && !isSwift) disabled = true;
+      if (nynjaOnly && val && !isNynja) disabled = true;
+
+      // Luggage Box requires wing_fuel
+      if (input.value === 'luggage_box') {
+        const wf = document.querySelector('input[value="wing_fuel"]');
+        if (!wf || !wf.checked) disabled = true;
+      }
+
+      label.classList.toggle('disabled', disabled);
+      input.disabled = disabled;
+      if (disabled && input.checked) input.checked = false;
+    });
+  }
+
+  function refresh() {
+    applyLocks();
+
+    let total = 0;
+    const rows = [];
+    document.querySelectorAll('.cfg-option input:checked').forEach(function (inp) {
+      const p = Number(inp.dataset.price || 0);
+      const label = inp.dataset.label || inp.value;
+      total += p;
+      rows.push({ label, price: p });
+    });
+
+    if (rows.length === 0) {
+      items.innerHTML = '<div class="empty">Select options to see your build.</div>';
+    } else {
+      items.innerHTML = rows.map(function (r) {
+        return '<div class="row"><span>' + r.label + '</span><span class="price">' + fmt(r.price) + '</span></div>';
+      }).join('');
+    }
+    totalEl.textContent = fmt(total);
+
+    // Update quote link with query for context
+    try {
+      const q = rows.map(function (r) { return r.label; }).join(' | ');
+      quoteBtn.setAttribute('href', 'contact-us.html?build=' + encodeURIComponent(q + ' — ' + fmt(total)));
+    } catch (e) { /* noop */ }
+  }
+
+  inputs.forEach(function (i) { i.addEventListener('change', refresh); });
+  refresh();
+})();
+</script>
+</body>
+</html>
