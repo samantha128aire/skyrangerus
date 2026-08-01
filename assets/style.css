@@ -415,6 +415,15 @@ section.section.alt { background: var(--bg-alt); }
 }
 .cfg-option.disabled { opacity: 0.4; cursor: not-allowed; }
 .cfg-option.disabled input { cursor: not-allowed; }
+.cfg-option .thumb {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+  background: #f4f4f4;
+}
 .cfg-option .tag {
   font-size: 0.75rem;
   background: #edf1fa;
