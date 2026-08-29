@@ -463,12 +463,66 @@ section.section.alt { background: var(--bg-alt); }
   box-shadow: var(--shadow);
 }
 .cfg-summary h3 { color: #fff; margin-bottom: 1rem; border-bottom: 2px solid var(--accent); padding-bottom: 0.5rem; }
+.cfg-summary .items-wrap {
+  position: relative;
+  margin-bottom: 1rem;
+}
 .cfg-summary .items {
   min-height: 80px;
   max-height: 340px;
   overflow-y: auto;
-  margin-bottom: 1rem;
   padding-right: 4px;
+  /* Fade hint at bottom that content continues */
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 24px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 24px), transparent 100%);
+}
+.cfg-summary .items.is-at-bottom,
+.cfg-summary .items:not(.is-scrollable) {
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+/* Visible custom scrollbar so users know it scrolls */
+.cfg-summary .items::-webkit-scrollbar { width: 10px; }
+.cfg-summary .items::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.08);
+  border-radius: 5px;
+}
+.cfg-summary .items::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.cfg-summary .items::-webkit-scrollbar-thumb:hover {
+  background: #fff;
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+.cfg-summary .items { scrollbar-color: var(--accent) rgba(255,255,255,0.08); scrollbar-width: thin; }
+.cfg-summary .scroll-hint {
+  position: absolute;
+  left: 0; right: 4px;
+  bottom: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0));
+  pointer-events: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+.cfg-summary .items-wrap.is-scrollable .scroll-hint { display: flex; }
+.cfg-summary .items-wrap.is-at-bottom .scroll-hint { opacity: 0; transition: opacity 0.2s; }
+.cfg-summary .scroll-hint::after { content: "▼"; font-size: 0.7rem; animation: cfgScrollBounce 1.4s infinite; }
+@keyframes cfgScrollBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(3px); }
 }
 .cfg-summary .items .row {
   display: flex;

@@ -6,7 +6,7 @@
 <title>Configurator — SkyRanger US</title>
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/style.css?v=4">
+<link rel="stylesheet" href="assets/style.css?v=5">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-SRXDN4G9TX"></script>
 <script>
@@ -405,15 +405,18 @@
       <!-- Summary sidebar -->
       <aside class="cfg-summary">
         <h3>Your SkyRanger</h3>
-        <div class="items" id="cfg-items">
-          <div class="empty">Select options to see your build.</div>
+        <div class="items-wrap" id="cfg-items-wrap">
+          <div class="items" id="cfg-items">
+            <div class="empty">Select options to see your build.</div>
+          </div>
+          <div class="scroll-hint" aria-hidden="true">Scroll for more</div>
         </div>
         <div class="total">
           <span>Total</span>
           <span id="cfg-total">$0</span>
         </div>
         <a href="contact-us.html" class="btn" id="cfg-quote">Request Quote</a>
-        <div class="note">For planning purposes only — prices updated March 2024.</div>
+        <div class="note">For planning purposes only — prices updated August 2026.</div>
       </aside>
     </div>
 
@@ -518,6 +521,17 @@
 
   function fmt(n) { return '$' + Number(n).toLocaleString('en-US'); }
 
+  const itemsWrap = document.getElementById('cfg-items-wrap');
+  function updateScrollHint() {
+    if (!itemsWrap) return;
+    const scrollable = items.scrollHeight > items.clientHeight + 1;
+    const atBottom = scrollable && (items.scrollTop + items.clientHeight >= items.scrollHeight - 2);
+    itemsWrap.classList.toggle('is-scrollable', scrollable);
+    itemsWrap.classList.toggle('is-at-bottom', atBottom);
+    items.classList.toggle('is-scrollable', scrollable);
+    items.classList.toggle('is-at-bottom', atBottom);
+  }
+
   function applyLocks() {
     // Determine aircraft
     const aircraft = document.querySelector('input[name="aircraft"]:checked');
@@ -541,6 +555,12 @@
         if (!wf || !wf.checked) disabled = true;
       }
 
+      // Wheel Pants (spats) not available if Bush Tires & Nosewheel Fork selected
+      if (input.value === 'wheel_spats') {
+        const bt = document.querySelector('input[value="bush_tires"]');
+        if (bt && bt.checked) disabled = true;
+      }
+
       label.classList.toggle('disabled', disabled);
       input.disabled = disabled;
       if (disabled && input.checked) input.checked = false;
@@ -558,14 +578,19 @@
       total += p;
       rows.push({ label, price: p });
     });
-    // Include Builder Assist selections (radios live inside a table, not .cfg-option)
+    // Roll up Builder Assist selections into a single line item
+    let baTotal = 0;
+    const baLabels = [];
     document.querySelectorAll('.builder-assist-table input:checked').forEach(function (inp) {
       const p = Number(inp.dataset.price || 0);
       if (p <= 0) return; // skip "None"
-      const label = inp.dataset.label || inp.value;
-      total += p;
-      rows.push({ label, price: p });
+      baTotal += p;
+      baLabels.push(inp.dataset.label || inp.value);
     });
+    if (baTotal > 0) {
+      total += baTotal;
+      rows.push({ label: 'Builder Assist Options', price: baTotal });
+    }
 
     if (rows.length === 0) {
       items.innerHTML = '<div class="empty">Select options to see your build.</div>';
@@ -575,6 +600,8 @@
       }).join('');
     }
     totalEl.textContent = fmt(total);
+
+    updateScrollHint();
 
     // Update quote link with query for context
     try {
@@ -612,6 +639,10 @@
     i.addEventListener('change', refresh);
   });
   applyBuilderAssistLocks();
+
+  items.addEventListener('scroll', updateScrollHint);
+  window.addEventListener('resize', updateScrollHint);
+
   refresh();
 })();
 </script>
