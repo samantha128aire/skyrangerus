@@ -520,6 +520,13 @@ section.section.alt { background: var(--bg-alt); }
 .cfg-summary .items-wrap.is-scrollable .scroll-hint { display: flex; }
 .cfg-summary .items-wrap.is-at-bottom .scroll-hint { opacity: 0; transition: opacity 0.2s; }
 .cfg-summary .scroll-hint::after { content: "▼"; font-size: 0.7rem; animation: cfgScrollBounce 1.4s infinite; }
+
+/* Builder Assist — disabled table cell (used by instrument interlock) */
+.builder-assist-table td.disabled-cell {
+  opacity: 0.4;
+  pointer-events: none;
+  background: rgba(0,0,0,0.03);
+}
 @keyframes cfgScrollBounce {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(3px); }

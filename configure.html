@@ -628,6 +628,29 @@
     } catch (e) { /* noop */ }
   }
 
+  // Interlock Basic Instruments <-> Advanced Instruments (only one can be non-None)
+  function applyInstrumentInterlock() {
+    const basic = document.querySelector('input[name="ba_basic_inst"]:checked');
+    const adv   = document.querySelector('input[name="ba_adv_inst"]:checked');
+    const basicActive = basic && basic.value !== 'none';
+    const advActive   = adv   && adv.value   !== 'none';
+
+    document.querySelectorAll('input[name="ba_basic_inst"]').forEach(function (inp) {
+      const isNone = inp.value === 'none';
+      const shouldDisable = advActive && !isNone;
+      inp.disabled = shouldDisable;
+      const cell = inp.closest('td');
+      if (cell) cell.classList.toggle('disabled-cell', shouldDisable);
+    });
+    document.querySelectorAll('input[name="ba_adv_inst"]').forEach(function (inp) {
+      const isNone = inp.value === 'none';
+      const shouldDisable = basicActive && !isNone;
+      inp.disabled = shouldDisable;
+      const cell = inp.closest('td');
+      if (cell) cell.classList.toggle('disabled-cell', shouldDisable);
+    });
+  }
+
   // Show/hide Builder Assist — Airframe options based on aircraft selection
   function applyBuilderAssistLocks() {
     const aircraft = document.querySelector('input[name="aircraft"]:checked');
@@ -651,12 +674,17 @@
   const airframeInputs = document.querySelectorAll('input[name="aircraft"]');
   airframeInputs.forEach(function (i) { i.addEventListener('change', applyBuilderAssistLocks); });
 
+  document.querySelectorAll('input[name="ba_basic_inst"], input[name="ba_adv_inst"]').forEach(function (i) {
+    i.addEventListener('change', applyInstrumentInterlock);
+  });
+
   inputs.forEach(function (i) { i.addEventListener('change', refresh); });
   // Re-query in case new inputs were added dynamically (they weren't, but safe)
   document.querySelectorAll('.cfg-section input, .builder-assist-table input').forEach(function (i) {
     i.addEventListener('change', refresh);
   });
   applyBuilderAssistLocks();
+  applyInstrumentInterlock();
 
   items.addEventListener('scroll', updateScrollHint);
   window.addEventListener('resize', updateScrollHint);
