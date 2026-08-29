@@ -283,23 +283,26 @@
         <!-- Seat Cover Color -->
         <div class="cfg-section">
           <h3>Seat Cover Color</h3>
+          <p class="seat-color-note" style="color:var(--muted);font-size:0.9rem;margin-top:-0.25rem;margin-bottom:0.75rem;display:none;">
+            Seat cover color choice is available only with the Composite Seats and Covers option (Swift 3).
+          </p>
           <div class="cfg-options">
-            <label class="cfg-option">
+            <label class="cfg-option" data-seat-color="1">
               <input type="radio" name="seat_cover_color" value="blue" data-price="0" data-label="Seat Cover Color: Blue">
               <span class="name">Blue</span>
               <span class="price">Included</span>
             </label>
-            <label class="cfg-option">
+            <label class="cfg-option" data-seat-color="1">
               <input type="radio" name="seat_cover_color" value="gray" data-price="0" data-label="Seat Cover Color: Gray">
               <span class="name">Gray</span>
               <span class="price">Included</span>
             </label>
-            <label class="cfg-option">
+            <label class="cfg-option" data-seat-color="1">
               <input type="radio" name="seat_cover_color" value="red" data-price="0" data-label="Seat Cover Color: Red">
               <span class="name">Red</span>
               <span class="price">Included</span>
             </label>
-            <label class="cfg-option">
+            <label class="cfg-option" data-seat-color="1">
               <input type="radio" name="seat_cover_color" value="black" data-price="0" data-label="Seat Cover Color: Black">
               <span class="name">Black</span>
               <span class="price">Included</span>
@@ -561,10 +564,25 @@
         if (bt && bt.checked) disabled = true;
       }
 
+      // Seat Cover Color options require Composite Seats and Covers (Swift 3 only)
+      if (label.dataset.seatColor === '1') {
+        const cs = document.querySelector('input[value="composite_seats"]');
+        const compositeChecked = cs && cs.checked && !cs.disabled;
+        if (isSwift && !compositeChecked) disabled = true;
+      }
+
       label.classList.toggle('disabled', disabled);
       input.disabled = disabled;
       if (disabled && input.checked) input.checked = false;
     });
+
+    // Show/hide the seat-color helper note based on Swift 3 + composite state
+    const seatNote = document.querySelector('.seat-color-note');
+    if (seatNote) {
+      const cs2 = document.querySelector('input[value="composite_seats"]');
+      const compositeChecked2 = cs2 && cs2.checked && !cs2.disabled;
+      seatNote.style.display = (isSwift && !compositeChecked2) ? 'block' : 'none';
+    }
   }
 
   function refresh() {
