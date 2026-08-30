@@ -413,6 +413,9 @@
           <p style="margin-top:1rem;font-size:0.95rem;color:var(--muted);">
             Builder assist options are completed at our Hilltop Lakes facility in Texas. Estimated completion time: Assist 6–8 weeks, Complete 12–16 weeks. Prices apply only to products purchased from us.
           </p>
+          <p style="margin-top:0.5rem;font-size:0.95rem;color:var(--muted);">
+            50/50 Assist requires your active building participation at our facility throughout the build process during the duration of the build. A hotel, campground, and restaurant are located 1–3 miles away.
+          </p>
         </div>
 
         <!-- Delivery -->
@@ -656,31 +659,84 @@
     } catch (e) { /* noop */ }
   }
 
-  // Interlock Instrument Pack <-> Situational Awareness Package builder-assist rows (only one can be non-None)
-  function applyInstrumentInterlock() {
-    const basic = document.querySelector('input[name="ba_basic_inst"]:checked');
-    const adv   = document.querySelector('input[name="ba_adv_inst"]:checked');
-    const basicActive = basic && basic.value !== 'none';
-    const advActive   = adv   && adv.value   !== 'none';
+  // Unified hardware -> builder-assist gating.
+  // Each builder-assist row is only selectable when the required hardware is chosen.
+  // Mapping:
+  //   ba_airframe   -> requires any Airplane Kit (aircraft radio)
+  //   ba_engine     -> requires an actual Rotax engine (912ul or 912uls)
+  //   ba_basic_inst -> requires Instrument Pack hardware
+  //   ba_adv_inst   -> requires Situational Awareness Package hardware
+  //   ba_txp_radio  -> requires Comm Radio and 2-Place Intercom Package
+  //   ba_lighting   -> requires Wingtip Lights, Strobe & Landing Light Package
+  //   ba_graphics, ba_flight_test, ba_faa -> always available (services, no hardware gate)
+  function isHardwareSelectedFor(baName) {
+    switch (baName) {
+      case 'ba_airframe': {
+        const a = document.querySelector('input[name="aircraft"]:checked');
+        return !!a;
+      }
+      case 'ba_engine': {
+        const e = document.querySelector('input[name="engine"]:checked');
+        return !!e && (e.value === '912ul' || e.value === '912uls');
+      }
+      case 'ba_basic_inst': {
+        const h = document.querySelector('input[name="opt"][value="inst_pack"]');
+        return !!h && h.checked;
+      }
+      case 'ba_adv_inst': {
+        const h = document.querySelector('input[name="opt"][value="sa_package"]');
+        return !!h && h.checked;
+      }
+      case 'ba_txp_radio': {
+        const h = document.querySelector('input[name="opt"][value="comm_radio_package"]');
+        return !!h && h.checked;
+      }
+      case 'ba_lighting': {
+        const h = document.querySelector('input[name="opt"][value="lighting_package"]');
+        return !!h && h.checked;
+      }
+      default:
+        return true; // no gate
+    }
+  }
 
-    document.querySelectorAll('input[name="ba_basic_inst"]').forEach(function (inp) {
-      const isNone = inp.value === 'none';
-      const shouldDisable = advActive && !isNone;
-      inp.disabled = shouldDisable;
-      const cell = inp.closest('td');
-      if (cell) cell.classList.toggle('disabled-cell', shouldDisable);
-    });
-    document.querySelectorAll('input[name="ba_adv_inst"]').forEach(function (inp) {
-      const isNone = inp.value === 'none';
-      const shouldDisable = basicActive && !isNone;
-      inp.disabled = shouldDisable;
-      const cell = inp.closest('td');
-      if (cell) cell.classList.toggle('disabled-cell', shouldDisable);
+  function hardwareGateTooltip(baName) {
+    switch (baName) {
+      case 'ba_airframe':   return 'Select an Airplane Kit first';
+      case 'ba_engine':     return 'Select a Rotax engine first';
+      case 'ba_basic_inst': return 'Select the Instrument Pack hardware first';
+      case 'ba_adv_inst':   return 'Select the Situational Awareness Package first';
+      case 'ba_txp_radio':  return 'Select the Comm Radio and 2-Place Intercom Package first';
+      case 'ba_lighting':   return 'Select the Wingtip Lights, Strobe & Landing Light Package first';
+      default:              return '';
+    }
+  }
+
+  function applyHardwareGates() {
+    const gatedRows = ['ba_airframe','ba_engine','ba_basic_inst','ba_adv_inst','ba_txp_radio','ba_lighting'];
+    gatedRows.forEach(function (name) {
+      const allowed = isHardwareSelectedFor(name);
+      const tooltip = allowed ? '' : hardwareGateTooltip(name);
+      document.querySelectorAll('input[name="' + name + '"]').forEach(function (inp) {
+        const isNone = inp.value === 'none';
+        const shouldDisable = !allowed && !isNone;
+        if (shouldDisable && inp.checked) {
+          inp.checked = false;
+          const noneInp = document.querySelector('input[name="' + name + '"][value="none"]');
+          if (noneInp) noneInp.checked = true;
+        }
+        inp.disabled = shouldDisable;
+        const cell = inp.closest('td');
+        if (cell) {
+          cell.classList.toggle('disabled-cell', shouldDisable);
+          if (tooltip) cell.title = tooltip; else cell.removeAttribute('title');
+        }
+      });
     });
   }
 
-  // Interlock between hardware Instrument Pack (Instruments section) and Situational Awareness Package
-  // (both the hardware option AND the builder-assist row for SA).
+  // Interlock between the Instrument Pack (Instruments section) and Situational Awareness Package (hardware).
+  // Only one can be selected as hardware.
   function applySituationalAwarenessInstrumentLock() {
     const sa       = document.querySelector('input[name="opt"][value="sa_package"]');
     const instPack = document.querySelector('input[name="opt"][value="inst_pack"]');
@@ -689,59 +745,19 @@
     const saActive       = !!sa.checked;
     const instPackActive = !!instPack.checked;
 
-    // Gray-out helper for cfg-option labels
     function setOptionLocked(input, locked, tooltip) {
       const lbl = input.closest('label');
       if (locked && input.checked) input.checked = false;
       input.disabled = locked;
       if (lbl) {
-        lbl.style.opacity      = locked ? '0.5' : '';
+        lbl.style.opacity       = locked ? '0.5' : '';
         lbl.style.pointerEvents = locked ? 'none' : '';
-        lbl.title              = locked ? tooltip : '';
+        lbl.title               = locked ? tooltip : '';
       }
     }
 
-    // SA hardware checked -> gray out Instrument Pack hardware
-    setOptionLocked(instPack, saActive, 'Included via Situational Awareness Package');
-    // Instrument Pack hardware checked -> gray out SA hardware
-    setOptionLocked(sa, instPackActive, 'Not compatible with Instrument Pack');
-
-    // Also mirror the interlock onto the builder-assist rows so the two
-    // hardware selections gray out the other item's builder-assist row.
-    // ba_basic_inst = Instrument Pack builder assist row
-    // ba_adv_inst   = Situational Awareness Package builder assist row
-    document.querySelectorAll('input[name="ba_adv_inst"]').forEach(function (inp) {
-      const isNone = inp.value === 'none';
-      const shouldDisable = instPackActive && !isNone;
-      if (shouldDisable && inp.checked) {
-        inp.checked = false;
-        const noneInp = document.querySelector('input[name="ba_adv_inst"][value="none"]');
-        if (noneInp) noneInp.checked = true;
-      }
-      inp.disabled = shouldDisable || inp.disabled;
-      const cell = inp.closest('td');
-      if (cell) {
-        if (shouldDisable) cell.classList.add('disabled-cell');
-      }
-    });
-    document.querySelectorAll('input[name="ba_basic_inst"]').forEach(function (inp) {
-      const isNone = inp.value === 'none';
-      const shouldDisable = saActive && !isNone;
-      if (shouldDisable && inp.checked) {
-        inp.checked = false;
-        const noneInp = document.querySelector('input[name="ba_basic_inst"][value="none"]');
-        if (noneInp) noneInp.checked = true;
-      }
-      inp.disabled = shouldDisable || inp.disabled;
-      const cell = inp.closest('td');
-      if (cell) {
-        if (shouldDisable) cell.classList.add('disabled-cell');
-      }
-    });
-
-    // Re-run the existing basic<->adv interlock so its own state stays authoritative
-    // when neither hardware option is checked.
-    applyInstrumentInterlock();
+    setOptionLocked(instPack, saActive,       'Included via Situational Awareness Package');
+    setOptionLocked(sa,       instPackActive, 'Not compatible with Instrument Pack');
   }
 
   // Show/hide Builder Assist — Airframe options based on aircraft selection
@@ -764,17 +780,24 @@
     });
   }
 
-  const airframeInputs = document.querySelectorAll('input[name="aircraft"]');
-  airframeInputs.forEach(function (i) { i.addEventListener('change', applyBuilderAssistLocks); });
-
-  document.querySelectorAll('input[name="ba_basic_inst"], input[name="ba_adv_inst"]').forEach(function (i) {
-    i.addEventListener('change', applyInstrumentInterlock);
+  // All hardware inputs that can change gating -> re-apply gates + SA/InstPack lock on change.
+  const gatingHardwareSelectors = [
+    'input[name="aircraft"]',
+    'input[name="engine"]',
+    'input[name="opt"][value="inst_pack"]',
+    'input[name="opt"][value="sa_package"]',
+    'input[name="opt"][value="comm_radio_package"]',
+    'input[name="opt"][value="lighting_package"]'
+  ];
+  gatingHardwareSelectors.forEach(function (sel) {
+    document.querySelectorAll(sel).forEach(function (inp) {
+      inp.addEventListener('change', function () {
+        applyBuilderAssistLocks();
+        applySituationalAwarenessInstrumentLock();
+        applyHardwareGates();
+      });
+    });
   });
-
-  const saInput       = document.querySelector('input[name="opt"][value="sa_package"]');
-  const instPackInput = document.querySelector('input[name="opt"][value="inst_pack"]');
-  if (saInput)       saInput.addEventListener('change', applySituationalAwarenessInstrumentLock);
-  if (instPackInput) instPackInput.addEventListener('change', applySituationalAwarenessInstrumentLock);
 
   inputs.forEach(function (i) { i.addEventListener('change', refresh); });
   // Re-query in case new inputs were added dynamically (they weren't, but safe)
@@ -782,8 +805,8 @@
     i.addEventListener('change', refresh);
   });
   applyBuilderAssistLocks();
-  applyInstrumentInterlock();
   applySituationalAwarenessInstrumentLock();
+  applyHardwareGates();
 
   items.addEventListener('scroll', updateScrollHint);
   window.addEventListener('resize', updateScrollHint);
