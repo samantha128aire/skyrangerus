@@ -679,29 +679,69 @@
     });
   }
 
-  // If Situational Awareness Package is selected in the main options, gray out the Instrument Pack option.
+  // Interlock between hardware Instrument Pack (Instruments section) and Situational Awareness Package
+  // (both the hardware option AND the builder-assist row for SA).
   function applySituationalAwarenessInstrumentLock() {
-    const sa = document.querySelector('input[name="opt"][value="sa_package"]');
+    const sa       = document.querySelector('input[name="opt"][value="sa_package"]');
     const instPack = document.querySelector('input[name="opt"][value="inst_pack"]');
     if (!sa || !instPack) return;
-    const saActive = !!sa.checked;
-    const lbl = instPack.closest('label');
-    if (saActive) {
-      if (instPack.checked) instPack.checked = false;
-      instPack.disabled = true;
+
+    const saActive       = !!sa.checked;
+    const instPackActive = !!instPack.checked;
+
+    // Gray-out helper for cfg-option labels
+    function setOptionLocked(input, locked, tooltip) {
+      const lbl = input.closest('label');
+      if (locked && input.checked) input.checked = false;
+      input.disabled = locked;
       if (lbl) {
-        lbl.style.opacity = '0.5';
-        lbl.style.pointerEvents = 'none';
-        lbl.title = 'Included via Situational Awareness Package';
-      }
-    } else {
-      instPack.disabled = false;
-      if (lbl) {
-        lbl.style.opacity = '';
-        lbl.style.pointerEvents = '';
-        lbl.title = '';
+        lbl.style.opacity      = locked ? '0.5' : '';
+        lbl.style.pointerEvents = locked ? 'none' : '';
+        lbl.title              = locked ? tooltip : '';
       }
     }
+
+    // SA hardware checked -> gray out Instrument Pack hardware
+    setOptionLocked(instPack, saActive, 'Included via Situational Awareness Package');
+    // Instrument Pack hardware checked -> gray out SA hardware
+    setOptionLocked(sa, instPackActive, 'Not compatible with Instrument Pack');
+
+    // Also mirror the interlock onto the builder-assist rows so the two
+    // hardware selections gray out the other item's builder-assist row.
+    // ba_basic_inst = Instrument Pack builder assist row
+    // ba_adv_inst   = Situational Awareness Package builder assist row
+    document.querySelectorAll('input[name="ba_adv_inst"]').forEach(function (inp) {
+      const isNone = inp.value === 'none';
+      const shouldDisable = instPackActive && !isNone;
+      if (shouldDisable && inp.checked) {
+        inp.checked = false;
+        const noneInp = document.querySelector('input[name="ba_adv_inst"][value="none"]');
+        if (noneInp) noneInp.checked = true;
+      }
+      inp.disabled = shouldDisable || inp.disabled;
+      const cell = inp.closest('td');
+      if (cell) {
+        if (shouldDisable) cell.classList.add('disabled-cell');
+      }
+    });
+    document.querySelectorAll('input[name="ba_basic_inst"]').forEach(function (inp) {
+      const isNone = inp.value === 'none';
+      const shouldDisable = saActive && !isNone;
+      if (shouldDisable && inp.checked) {
+        inp.checked = false;
+        const noneInp = document.querySelector('input[name="ba_basic_inst"][value="none"]');
+        if (noneInp) noneInp.checked = true;
+      }
+      inp.disabled = shouldDisable || inp.disabled;
+      const cell = inp.closest('td');
+      if (cell) {
+        if (shouldDisable) cell.classList.add('disabled-cell');
+      }
+    });
+
+    // Re-run the existing basic<->adv interlock so its own state stays authoritative
+    // when neither hardware option is checked.
+    applyInstrumentInterlock();
   }
 
   // Show/hide Builder Assist — Airframe options based on aircraft selection
@@ -731,8 +771,10 @@
     i.addEventListener('change', applyInstrumentInterlock);
   });
 
-  const saInput = document.querySelector('input[name="opt"][value="sa_package"]');
-  if (saInput) saInput.addEventListener('change', applySituationalAwarenessInstrumentLock);
+  const saInput       = document.querySelector('input[name="opt"][value="sa_package"]');
+  const instPackInput = document.querySelector('input[name="opt"][value="inst_pack"]');
+  if (saInput)       saInput.addEventListener('change', applySituationalAwarenessInstrumentLock);
+  if (instPackInput) instPackInput.addEventListener('change', applySituationalAwarenessInstrumentLock);
 
   inputs.forEach(function (i) { i.addEventListener('change', refresh); });
   // Re-query in case new inputs were added dynamically (they weren't, but safe)
