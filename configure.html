@@ -436,7 +436,15 @@
               <span class="name">Customer will pick-up order</span>
               <span class="price">$0</span>
             </label>
+            <label class="cfg-option" data-intl-shipping="1">
+              <input type="radio" name="delivery" value="intl" data-price="0" data-label="International Shipping (for orders not part of a complete kit)">
+              <span class="name">International Shipping <small style="font-weight:400;color:var(--muted);">(for orders not part of a complete kit) — TBD</small></span>
+              <span class="price">TBD</span>
+            </label>
           </div>
+          <p style="margin-top:0.75rem;font-size:0.9rem;color:var(--muted);">
+            <strong>Note:</strong> Orders not associated with a kit order (no Swift 3 or Nynja kit selected) are subject to a 25% premium on hardware items, applied automatically. The premium applies only when the hardware subtotal is under $5,000 and does not apply to Builder Assist or other services.
+          </p>
         </div>
       </div>
 
@@ -660,8 +668,41 @@
     }
   }
 
+  // Determine whether a full kit (Swift 3 or Nynja) is selected.
+  // When NO kit is selected, orders are subject to a 25% non-kit premium
+  // and International Shipping is auto-selected.
+  function isKitSelected() {
+    const a = document.querySelector('input[name="aircraft"]:checked');
+    return !!a && (a.value === 'swift3' || a.value === 'nynja');
+  }
+
+  function applyNonKitDeliveryDefault() {
+    const kit = isKitSelected();
+    const intl   = document.querySelector('input[name="delivery"][value="intl"]');
+    const ship   = document.querySelector('input[name="delivery"][value="ship"]');
+    const pickup = document.querySelector('input[name="delivery"][value="pickup"]');
+    if (!intl) return;
+
+    // Toggle visibility/availability of the International Shipping row based on kit state.
+    const intlLabel = intl.closest('label');
+    if (intlLabel) intlLabel.classList.toggle('disabled', kit);
+    intl.disabled = kit;
+
+    if (!kit) {
+      // No kit → force International Shipping and clear the other delivery options.
+      if (ship && ship.checked) ship.checked = false;
+      if (pickup && pickup.checked) pickup.checked = false;
+      intl.checked = true;
+    } else if (intl.checked) {
+      // Kit selected → International Shipping is not applicable; clear it so
+      // the customer picks a real delivery option.
+      intl.checked = false;
+    }
+  }
+
   function refresh() {
     applyLocks();
+    applyNonKitDeliveryDefault();
 
     let total = 0;
     const rows = [];
@@ -683,6 +724,22 @@
     if (baTotal > 0) {
       total += baTotal;
       rows.push({ label: 'Builder Assist Options', price: baTotal });
+    }
+
+    // Non-kit 25% premium: applied when no Swift 3 or Nynja kit is selected
+    // AND the HARDWARE subtotal is under $5,000. Premium is charged only on
+    // hardware line items — Builder Assist and other services are excluded.
+    const kitSelected = isKitSelected();
+    if (!kitSelected) {
+      let hardwareSubtotal = 0;
+      document.querySelectorAll('.cfg-option input:checked').forEach(function (inp) {
+        hardwareSubtotal += Number(inp.dataset.price || 0);
+      });
+      if (hardwareSubtotal > 0 && hardwareSubtotal < 5000) {
+        const premium = Math.round(hardwareSubtotal * 0.25);
+        rows.push({ label: 'Non-Kit Order Premium (25% of hardware)', price: premium });
+        total += premium;
+      }
     }
 
     if (rows.length === 0) {
