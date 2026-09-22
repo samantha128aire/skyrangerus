@@ -823,11 +823,40 @@
       }
     }
 
+    // Dacron color selection line item (Standard = $0, Custom = $500)
+    // Only include when a Dacron selection exists AND XLam is not overriding it.
+    try {
+      const _a  = document.getElementById('dacron_a');
+      const _b  = document.getElementById('dacron_b');
+      const _s  = document.getElementById('dacron_scheme');
+      if (_a && _b && _a.value && _b.value) {
+        const ac = document.querySelector('input[name="aircraft"]:checked');
+        const av = ac ? ac.value : null;
+        const xs = document.querySelector('input[value="xlam_swift"]');
+        const xn = document.querySelector('input[value="xlam_nynja"]');
+        const xlamActive = (av === 'swift3' && xs && xs.checked) ||
+                           (av === 'nynja'  && xn && xn.checked);
+        if (!xlamActive) {
+          const isCustom = !_s.value;
+          const nameOf = function (k) {
+            const map = { red:'Red', yellow:'Yellow', blue:'Blue', green:'Green', jade:'Jade', purple:'Purple', violet:'Violet', white:'White', black:'Black', grey:'Grey' };
+            return map[k] || k;
+          };
+          const dLabel = (isCustom ? 'Dacron Custom Colors' : 'Dacron Scheme ' + _s.value) +
+                         ' — A: ' + nameOf(_a.value) + ' / B: ' + nameOf(_b.value);
+          const dPrice = isCustom ? 500 : 0;
+          rows.push({ label: dLabel, price: dPrice });
+          total += dPrice;
+        }
+      }
+    } catch (e) { /* noop */ }
+
     if (rows.length === 0) {
       items.innerHTML = '<div class="empty">Select options to see your build.</div>';
     } else {
       items.innerHTML = rows.map(function (r) {
-        return '<div class="row"><span>' + r.label + '</span><span class="price">' + fmt(r.price) + '</span></div>';
+        const priceStr = r.price === 0 ? 'Included' : fmt(r.price);
+        return '<div class="row"><span>' + r.label + '</span><span class="price">' + priceStr + '</span></div>';
       }).join('');
     }
     totalEl.textContent = fmt(total);
@@ -1229,40 +1258,8 @@
     });
   });
 
-  // Extend refresh() to add the dacron selection to the quote summary.
-  // Standard schemes = Included ($0); Custom = +$500 surcharge added to total.
-  const origRefresh = refresh;
-  window.refresh = function () {
-    origRefresh();
-    const aircraft = document.querySelector('input[name="aircraft"]:checked');
-    const val = aircraft ? aircraft.value : null;
-    const isSwift = val === 'swift3';
-    const isNynja = val === 'nynja';
-    const xlamSwift = document.querySelector('input[value="xlam_swift"]');
-    const xlamNynja = document.querySelector('input[value="xlam_nynja"]');
-    const xlamActive = (isSwift && xlamSwift && xlamSwift.checked) ||
-                       (isNynja && xlamNynja && xlamNynja.checked);
-    if (xlamActive) return;
-    if (!aInput.value || !bInput.value) return;
-
-    const isCustom = !schemeInput.value;
-    const label = (schemeInput.value ? 'Dacron Scheme ' + schemeInput.value : 'Dacron Custom Colors') +
-                  ' — A: ' + colorName(aInput.value) + ' / B: ' + colorName(bInput.value);
-
-    // Append the summary line
-    const li = document.createElement('div');
-    li.className = 'cfg-item';
-    li.innerHTML = '<span>' + label + '</span><span>' + (isCustom ? '$500' : 'Included') + '</span>';
-    if (items) items.appendChild(li);
-
-    // If custom, add $500 to the running total
-    if (isCustom && totalEl) {
-      const currentTotal = Number(String(totalEl.textContent).replace(/[^0-9.-]/g, '')) || 0;
-      const newTotal = currentTotal + 500;
-      totalEl.textContent = fmt(newTotal);
-    }
-    updateScrollHint();
-  };
+  // Dacron line item is now injected inside the main refresh() rows array
+  // (see the Dacron color selection block in refresh above). No post-hook needed.
 
   applyDacronVisibility();
   updateDacronDisplay();
