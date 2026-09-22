@@ -10,7 +10,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon-180.png">
-<link rel="stylesheet" href="assets/style.css?v=6">
+<link rel="stylesheet" href="assets/style.css?v=7">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-SRXDN4G9TX"></script>
 <script>
@@ -288,7 +288,7 @@
         <div class="cfg-section" id="dacron-colors-section">
           <h3>Dacron Panel Colors</h3>
           <p style="color:var(--muted);font-size:0.95rem;margin-top:-0.25rem;margin-bottom:1rem;">
-            Choose your Dacron covering colors. Included with your kit at no extra cost. Fairings and spats are supplied in white only.
+            Choose your Dacron covering colors. Standard schemes are included with your kit at no extra cost; custom color schemes add $500. Fairings and spats are supplied in white only.
           </p>
           <p class="dacron-xlam-note" style="color:var(--muted);font-size:0.9rem;margin-bottom:0.75rem;display:none;">
             XLam coverings are selected above — Dacron color choice does not apply.
@@ -633,9 +633,15 @@
     </div>
 
     <div class="dacron-tab-panel active" data-tab-panel="standard">
-      <p class="dacron-help">Pick one of six pre-designed color schemes.</p>
-      <div class="dacron-schemes">
-        <!-- Schemes rendered by JS -->
+      <p class="dacron-help">Pick one of six pre-designed color schemes. The diagram shows where A panels and B panels are located on the aircraft.</p>
+      <div class="dacron-standard-grid">
+        <div class="dacron-diagram">
+          <img src="assets/img/dacron-colors-reference.png" alt="SkyRanger A and B panel locations" />
+          <p class="dacron-diagram-caption"><span class="dot dot-a"></span> A Panels &nbsp; <span class="dot dot-b"></span> B Panels</p>
+        </div>
+        <div class="dacron-schemes">
+          <!-- Schemes rendered by JS -->
+        </div>
       </div>
     </div>
 
@@ -660,6 +666,7 @@
             </div>
           </div>
           <p class="dacron-note">Note: Fairings and spats are supplied in white only.</p>
+          <p class="dacron-note dacron-custom-charge">Custom color schemes are subject to an additional <strong>$500</strong> charge.</p>
         </div>
       </div>
     </div>
@@ -990,16 +997,16 @@
   // Dacron Panel Colors — modal, swatches, schemes
   // =====================================================
   const DACRON_COLORS = [
-    { key: 'red',    name: 'Red',    hex: '#c0261e' },
-    { key: 'yellow', name: 'Yellow', hex: '#f2c81f' },
-    { key: 'blue',   name: 'Blue',   hex: '#22509f' },
-    { key: 'green',  name: 'Green',  hex: '#2f7a3b' },
-    { key: 'jade',   name: 'Jade',   hex: '#4ac1b5' },
-    { key: 'purple', name: 'Purple', hex: '#8a5aa6' },
-    { key: 'violet', name: 'Violet', hex: '#6355c9' },
+    { key: 'red',    name: 'Red',    hex: '#ee3338' },
+    { key: 'yellow', name: 'Yellow', hex: '#fef214' },
+    { key: 'blue',   name: 'Blue',   hex: '#585ca7' },
+    { key: 'green',  name: 'Green',  hex: '#1da461' },
+    { key: 'jade',   name: 'Jade',   hex: '#77ccd2' },
+    { key: 'purple', name: 'Purple', hex: '#c893c0' },
+    { key: 'violet', name: 'Violet', hex: '#8476b5' },
     { key: 'white',  name: 'White',  hex: '#ffffff' },
-    { key: 'black',  name: 'Black',  hex: '#161616' },
-    { key: 'grey',   name: 'Grey',   hex: '#a4a9ae' }
+    { key: 'black',  name: 'Black',  hex: '#000000' },
+    { key: 'grey',   name: 'Grey',   hex: '#c8cacb' }
   ];
 
   const DACRON_SCHEMES = [
@@ -1222,12 +1229,11 @@
     });
   });
 
-  // Extend refresh() by hooking the quote summary: add dacron selection as a line item ($0)
-  // We do this by patching after refresh runs. Simpler: append to items after refresh.
+  // Extend refresh() to add the dacron selection to the quote summary.
+  // Standard schemes = Included ($0); Custom = +$500 surcharge added to total.
   const origRefresh = refresh;
   window.refresh = function () {
     origRefresh();
-    // Add a Dacron line if selected AND not overridden by XLam
     const aircraft = document.querySelector('input[name="aircraft"]:checked');
     const val = aircraft ? aircraft.value : null;
     const isSwift = val === 'swift3';
@@ -1238,13 +1244,23 @@
                        (isNynja && xlamNynja && xlamNynja.checked);
     if (xlamActive) return;
     if (!aInput.value || !bInput.value) return;
-    // Inject a summary line at the end of the items list
+
+    const isCustom = !schemeInput.value;
+    const label = (schemeInput.value ? 'Dacron Scheme ' + schemeInput.value : 'Dacron Custom Colors') +
+                  ' — A: ' + colorName(aInput.value) + ' / B: ' + colorName(bInput.value);
+
+    // Append the summary line
     const li = document.createElement('div');
     li.className = 'cfg-item';
-    const label = (schemeInput.value ? 'Dacron Scheme ' + schemeInput.value : 'Dacron Custom') +
-                  ' — A: ' + colorName(aInput.value) + ' / B: ' + colorName(bInput.value);
-    li.innerHTML = '<span>' + label + '</span><span>Included</span>';
+    li.innerHTML = '<span>' + label + '</span><span>' + (isCustom ? '$500' : 'Included') + '</span>';
     if (items) items.appendChild(li);
+
+    // If custom, add $500 to the running total
+    if (isCustom && totalEl) {
+      const currentTotal = Number(String(totalEl.textContent).replace(/[^0-9.-]/g, '')) || 0;
+      const newTotal = currentTotal + 500;
+      totalEl.textContent = fmt(newTotal);
+    }
     updateScrollHint();
   };
 

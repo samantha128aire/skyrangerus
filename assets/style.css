@@ -1037,3 +1037,22 @@ html, body { overflow-x: hidden; max-width: 100%; }
   color: #333;
   text-shadow: none;
 }
+
+/* Standard schemes layout with diagram */
+.dacron-standard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+@media (max-width: 800px) {
+  .dacron-standard-grid { grid-template-columns: 1fr; }
+}
+.dacron-standard-grid .dacron-schemes {
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+}
+.dacron-custom-charge {
+  color: #b8541c;
+  font-style: normal;
+  font-weight: 500;
+}
