@@ -134,16 +134,36 @@
 
 <script src="assets/main.js"></script>
 <script>
-// If arrived from configurator with ?build=..., prefill message
+// If arrived from configurator with ?build=..., prefill message.
+// The build string is pipe-separated line items; we render it as a
+// bullet list and surface the Dacron color selection explicitly.
 (function () {
   const params = new URLSearchParams(window.location.search);
   const build = params.get('build');
-  if (build) {
-    const msg = document.querySelector('textarea[name="message"]');
-    const hidden = document.getElementById('build-field');
-    if (msg) msg.value = 'I built this on the configurator:\n\n' + build + '\n\nPlease send me a formal quote.';
-    if (hidden) hidden.value = build;
+  if (!build) return;
+  const msg = document.querySelector('textarea[name="message"]');
+  const hidden = document.getElementById('build-field');
+
+  // Split "row1 | row2 | row3 — $Total" into rows + total
+  let items = build.split(' | ');
+  let total = '';
+  const last = items[items.length - 1] || '';
+  const dashIdx = last.lastIndexOf(' — ');
+  if (dashIdx > -1) {
+    total = last.slice(dashIdx + 3);
+    items[items.length - 1] = last.slice(0, dashIdx);
   }
+
+  const dacronLine = items.find(function (r) { return r.indexOf('Dacron') === 0; });
+  const bulletList = items.map(function (r) { return '  • ' + r; }).join('\n');
+
+  let body = 'I built this on the configurator:\n\n' + bulletList;
+  if (total) body += '\n\nTotal: ' + total;
+  if (dacronLine) body += '\n\nDacron color choice: ' + dacronLine.replace(/^Dacron\s*/, '');
+  body += '\n\nPlease send me a formal quote.';
+
+  if (msg) msg.value = body;
+  if (hidden) hidden.value = build;
 })();
 </script>
 </body>

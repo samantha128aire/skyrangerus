@@ -10,7 +10,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon-180.png">
-<link rel="stylesheet" href="assets/style.css?v=7">
+<link rel="stylesheet" href="assets/style.css?v=8">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-SRXDN4G9TX"></script>
 <script>
@@ -825,30 +825,53 @@
 
     // Dacron color selection line item (Standard = $0, Custom = $500)
     // Only include when a Dacron selection exists AND XLam is not overriding it.
+    // Also compute a small badge to prepend to the kit line item for visual preview.
+    let dacronBadge = '';
+    let dacronRow = null;
+    let kitSelectedForBadge = false;
     try {
       const _a  = document.getElementById('dacron_a');
       const _b  = document.getElementById('dacron_b');
       const _s  = document.getElementById('dacron_scheme');
-      if (_a && _b && _a.value && _b.value) {
-        const ac = document.querySelector('input[name="aircraft"]:checked');
-        const av = ac ? ac.value : null;
-        const xs = document.querySelector('input[value="xlam_swift"]');
-        const xn = document.querySelector('input[value="xlam_nynja"]');
-        const xlamActive = (av === 'swift3' && xs && xs.checked) ||
-                           (av === 'nynja'  && xn && xn.checked);
-        if (!xlamActive) {
-          const isCustom = !_s.value;
-          const nameOf = function (k) {
-            const map = { red:'Red', yellow:'Yellow', blue:'Blue', green:'Green', jade:'Jade', purple:'Purple', violet:'Violet', white:'White', black:'Black', grey:'Grey' };
-            return map[k] || k;
-          };
-          const dLabel = (isCustom ? 'Dacron Custom Colors' : 'Dacron Scheme ' + _s.value) +
-                         ' — A: ' + nameOf(_a.value) + ' / B: ' + nameOf(_b.value);
-          const dPrice = isCustom ? 500 : 0;
-          rows.push({ label: dLabel, price: dPrice });
-          total += dPrice;
-        }
+      const ac = document.querySelector('input[name="aircraft"]:checked');
+      const av = ac ? ac.value : null;
+      kitSelectedForBadge = (av === 'swift3' || av === 'nynja');
+      const xs = document.querySelector('input[value="xlam_swift"]');
+      const xn = document.querySelector('input[value="xlam_nynja"]');
+      const xlamActive = (av === 'swift3' && xs && xs.checked) ||
+                         (av === 'nynja'  && xn && xn.checked);
+      const COLOR_HEX = { red:'#ee3338', yellow:'#fef214', blue:'#585ca7', green:'#1da461', jade:'#77ccd2', purple:'#c893c0', violet:'#8476b5', white:'#ffffff', black:'#000000', grey:'#c8cacb' };
+      const COLOR_NAME = { red:'Red', yellow:'Yellow', blue:'Blue', green:'Green', jade:'Jade', purple:'Purple', violet:'Violet', white:'White', black:'Black', grey:'Grey' };
+      if (_a && _b && _a.value && _b.value && !xlamActive) {
+        const isCustom = !_s.value;
+        const dLabel = (isCustom ? 'Dacron Custom Colors' : 'Dacron Scheme ' + _s.value) +
+                       ' — A: ' + COLOR_NAME[_a.value] + ' / B: ' + COLOR_NAME[_b.value];
+        const dPrice = isCustom ? 500 : 0;
+        dacronRow = { label: dLabel, price: dPrice };
+        rows.push(dacronRow);
+        total += dPrice;
+        // Build kit badge chips
+        dacronBadge = '<span class="kit-color-badge" title="Dacron A: ' + COLOR_NAME[_a.value] + ' / B: ' + COLOR_NAME[_b.value] + '">' +
+                      '<span class="kit-chip" style="background:' + COLOR_HEX[_a.value] + ';"></span>' +
+                      '<span class="kit-chip" style="background:' + COLOR_HEX[_b.value] + ';"></span>' +
+                      '</span>';
       }
+    } catch (e) { /* noop */ }
+
+    // Pulse the "Choose Dacron Colors" button when a kit is selected but no colors picked yet.
+    try {
+      const btn = document.getElementById('btn-choose-dacron');
+      const _a2 = document.getElementById('dacron_a');
+      const _b2 = document.getElementById('dacron_b');
+      const acp = document.querySelector('input[name="aircraft"]:checked');
+      const avp = acp ? acp.value : null;
+      const xsp = document.querySelector('input[value="xlam_swift"]');
+      const xnp = document.querySelector('input[value="xlam_nynja"]');
+      const xlamOn = (avp === 'swift3' && xsp && xsp.checked) ||
+                     (avp === 'nynja'  && xnp && xnp.checked);
+      const kitOn = (avp === 'swift3' || avp === 'nynja');
+      const needsColor = kitOn && !xlamOn && !(_a2 && _b2 && _a2.value && _b2.value);
+      if (btn) btn.classList.toggle('pulse-attention', needsColor);
     } catch (e) { /* noop */ }
 
     if (rows.length === 0) {
@@ -856,7 +879,12 @@
     } else {
       items.innerHTML = rows.map(function (r) {
         const priceStr = r.price === 0 ? 'Included' : fmt(r.price);
-        return '<div class="row"><span>' + r.label + '</span><span class="price">' + priceStr + '</span></div>';
+        // Prepend the color badge to the aircraft kit line (Swift 3 Kit / Nynja Kit)
+        let extra = '';
+        if (dacronBadge && (r.label === 'Swift 3 Kit' || r.label === 'Nynja Kit')) {
+          extra = ' ' + dacronBadge;
+        }
+        return '<div class="row"><span>' + r.label + extra + '</span><span class="price">' + priceStr + '</span></div>';
       }).join('');
     }
     totalEl.textContent = fmt(total);
