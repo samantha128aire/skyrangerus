@@ -10,7 +10,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon-180.png">
-<link rel="stylesheet" href="assets/style.css?v=5">
+<link rel="stylesheet" href="assets/style.css?v=6">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-SRXDN4G9TX"></script>
 <script>
@@ -282,6 +282,27 @@
             </label>
 
           </div>
+        </div>
+
+        <!-- Dacron Panel Colors -->
+        <div class="cfg-section" id="dacron-colors-section">
+          <h3>Dacron Panel Colors</h3>
+          <p style="color:var(--muted);font-size:0.95rem;margin-top:-0.25rem;margin-bottom:1rem;">
+            Choose your Dacron covering colors. Included with your kit at no extra cost. Fairings and spats are supplied in white only.
+          </p>
+          <p class="dacron-xlam-note" style="color:var(--muted);font-size:0.9rem;margin-bottom:0.75rem;display:none;">
+            XLam coverings are selected above — Dacron color choice does not apply.
+          </p>
+          <div class="dacron-picker-row">
+            <button type="button" class="btn-choose-dacron" id="btn-choose-dacron">Choose Dacron Colors</button>
+            <div class="dacron-current" id="dacron-current">
+              <span class="dacron-current-label">Current selection:</span>
+              <span class="dacron-current-value" id="dacron-current-value">None selected</span>
+            </div>
+          </div>
+          <input type="hidden" name="dacron_scheme" id="dacron_scheme" value="">
+          <input type="hidden" name="dacron_a" id="dacron_a" value="">
+          <input type="hidden" name="dacron_b" id="dacron_b" value="">
         </div>
 
         <!-- Situational Awareness, Communications & Lighting -->
@@ -597,6 +618,59 @@
   </div>
 </footer>
 
+<!-- Dacron Colors Modal -->
+<div class="dacron-modal" id="dacron-modal" aria-hidden="true" role="dialog" aria-labelledby="dacron-modal-title">
+  <div class="dacron-modal-backdrop" data-dacron-close="1"></div>
+  <div class="dacron-modal-panel" role="document">
+    <div class="dacron-modal-header">
+      <h3 id="dacron-modal-title">Choose Dacron Colors</h3>
+      <button type="button" class="dacron-modal-close" aria-label="Close" data-dacron-close="1">&times;</button>
+    </div>
+
+    <div class="dacron-tabs" role="tablist">
+      <button type="button" class="dacron-tab active" data-tab="standard" role="tab" aria-selected="true">Standard Schemes</button>
+      <button type="button" class="dacron-tab" data-tab="custom" role="tab" aria-selected="false">Custom Colors</button>
+    </div>
+
+    <div class="dacron-tab-panel active" data-tab-panel="standard">
+      <p class="dacron-help">Pick one of six pre-designed color schemes.</p>
+      <div class="dacron-schemes">
+        <!-- Schemes rendered by JS -->
+      </div>
+    </div>
+
+    <div class="dacron-tab-panel" data-tab-panel="custom">
+      <p class="dacron-help">Choose any color for the A panels and B panels. The diagram shows where each panel group is located on the aircraft.</p>
+      <div class="dacron-custom-grid">
+        <div class="dacron-diagram">
+          <img src="assets/img/dacron-colors-reference.png" alt="SkyRanger A and B panel locations" />
+          <p class="dacron-diagram-caption"><span class="dot dot-a"></span> A Panels &nbsp; <span class="dot dot-b"></span> B Panels</p>
+        </div>
+        <div class="dacron-swatches">
+          <div class="dacron-panel-group">
+            <h4>A Panels: <span class="selected-color" id="a-panel-selected">—</span></h4>
+            <div class="swatch-grid" data-panel="a">
+              <!-- swatches rendered by JS -->
+            </div>
+          </div>
+          <div class="dacron-panel-group">
+            <h4>B Panels: <span class="selected-color" id="b-panel-selected">—</span></h4>
+            <div class="swatch-grid" data-panel="b">
+              <!-- swatches rendered by JS -->
+            </div>
+          </div>
+          <p class="dacron-note">Note: Fairings and spats are supplied in white only.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="dacron-modal-footer">
+      <button type="button" class="btn-secondary" data-dacron-close="1">Cancel</button>
+      <button type="button" class="btn-primary" id="dacron-save">Save Selection</button>
+    </div>
+  </div>
+</div>
+
 <script src="assets/main.js"></script>
 <script>
 (function () {
@@ -911,6 +985,271 @@
 
   items.addEventListener('scroll', updateScrollHint);
   window.addEventListener('resize', updateScrollHint);
+
+  // =====================================================
+  // Dacron Panel Colors — modal, swatches, schemes
+  // =====================================================
+  const DACRON_COLORS = [
+    { key: 'red',    name: 'Red',    hex: '#c0261e' },
+    { key: 'yellow', name: 'Yellow', hex: '#f2c81f' },
+    { key: 'blue',   name: 'Blue',   hex: '#22509f' },
+    { key: 'green',  name: 'Green',  hex: '#2f7a3b' },
+    { key: 'jade',   name: 'Jade',   hex: '#4ac1b5' },
+    { key: 'purple', name: 'Purple', hex: '#8a5aa6' },
+    { key: 'violet', name: 'Violet', hex: '#6355c9' },
+    { key: 'white',  name: 'White',  hex: '#ffffff' },
+    { key: 'black',  name: 'Black',  hex: '#161616' },
+    { key: 'grey',   name: 'Grey',   hex: '#a4a9ae' }
+  ];
+
+  const DACRON_SCHEMES = [
+    { id: 1, a: 'white', b: 'blue'   },
+    { id: 2, a: 'white', b: 'red'    },
+    { id: 3, a: 'white', b: 'yellow' },
+    { id: 4, a: 'white', b: 'green'  },
+    { id: 5, a: 'red',   b: 'black'  },
+    { id: 6, a: 'jade',  b: 'purple' }
+  ];
+
+  function colorByKey(key) {
+    return DACRON_COLORS.find(function (c) { return c.key === key; });
+  }
+  function colorName(key) {
+    const c = colorByKey(key);
+    return c ? c.name : '';
+  }
+
+  const modal          = document.getElementById('dacron-modal');
+  const openBtn        = document.getElementById('btn-choose-dacron');
+  const saveBtn        = document.getElementById('dacron-save');
+  const currentValueEl = document.getElementById('dacron-current-value');
+  const schemeInput    = document.getElementById('dacron_scheme');
+  const aInput         = document.getElementById('dacron_a');
+  const bInput         = document.getElementById('dacron_b');
+  const aSelectedEl    = document.getElementById('a-panel-selected');
+  const bSelectedEl    = document.getElementById('b-panel-selected');
+  const dacronSection  = document.getElementById('dacron-colors-section');
+  const xlamNote       = document.querySelector('.dacron-xlam-note');
+  const pickerRow      = document.querySelector('.dacron-picker-row');
+
+  let draftA = '';
+  let draftB = '';
+  let draftScheme = '';
+
+  // Render standard scheme cards
+  const schemesWrap = modal.querySelector('.dacron-schemes');
+  DACRON_SCHEMES.forEach(function (s) {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'dacron-scheme-card';
+    card.dataset.schemeId = String(s.id);
+    card.innerHTML =
+      '<div class="scheme-num">' + s.id + '</div>' +
+      '<div class="scheme-swatches">' +
+        '<div class="scheme-swatch" style="background:' + colorByKey(s.a).hex + ';" title="A: ' + colorName(s.a) + '"></div>' +
+        '<div class="scheme-swatch" style="background:' + colorByKey(s.b).hex + ';" title="B: ' + colorName(s.b) + '"></div>' +
+      '</div>' +
+      '<div class="scheme-label">A: ' + colorName(s.a) + '<br>B: ' + colorName(s.b) + '</div>';
+    card.addEventListener('click', function () {
+      schemesWrap.querySelectorAll('.dacron-scheme-card').forEach(function (el) { el.classList.remove('selected'); });
+      card.classList.add('selected');
+      draftScheme = String(s.id);
+      draftA = s.a;
+      draftB = s.b;
+      // Sync custom-tab swatches so if user flips tabs the state is consistent
+      syncSwatchSelection();
+    });
+    schemesWrap.appendChild(card);
+  });
+
+  // Render swatch grids (A + B)
+  function buildSwatchGrid(panelKey) {
+    const grid = modal.querySelector('.swatch-grid[data-panel="' + panelKey + '"]');
+    DACRON_COLORS.forEach(function (c) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'swatch';
+      btn.dataset.color = c.key;
+      btn.title = c.name;
+      btn.style.background = c.hex;
+      if (c.key === 'white') btn.classList.add('is-light');
+      btn.innerHTML = '<span class="swatch-label">' + c.name + '</span>';
+      btn.addEventListener('click', function () {
+        grid.querySelectorAll('.swatch').forEach(function (el) { el.classList.remove('selected'); });
+        btn.classList.add('selected');
+        if (panelKey === 'a') {
+          draftA = c.key;
+          aSelectedEl.textContent = c.name;
+        } else {
+          draftB = c.key;
+          bSelectedEl.textContent = c.name;
+        }
+        // Custom selection wipes the scheme choice
+        draftScheme = '';
+        schemesWrap.querySelectorAll('.dacron-scheme-card').forEach(function (el) { el.classList.remove('selected'); });
+      });
+      grid.appendChild(btn);
+    });
+  }
+  buildSwatchGrid('a');
+  buildSwatchGrid('b');
+
+  function syncSwatchSelection() {
+    modal.querySelectorAll('.swatch-grid[data-panel="a"] .swatch').forEach(function (el) {
+      el.classList.toggle('selected', el.dataset.color === draftA);
+    });
+    modal.querySelectorAll('.swatch-grid[data-panel="b"] .swatch').forEach(function (el) {
+      el.classList.toggle('selected', el.dataset.color === draftB);
+    });
+    aSelectedEl.textContent = draftA ? colorName(draftA) : '—';
+    bSelectedEl.textContent = draftB ? colorName(draftB) : '—';
+  }
+
+  // Tabs
+  modal.querySelectorAll('.dacron-tab').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      const which = tab.dataset.tab;
+      modal.querySelectorAll('.dacron-tab').forEach(function (t) {
+        const active = t.dataset.tab === which;
+        t.classList.toggle('active', active);
+        t.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      modal.querySelectorAll('.dacron-tab-panel').forEach(function (p) {
+        p.classList.toggle('active', p.dataset.tabPanel === which);
+      });
+    });
+  });
+
+  function openModal() {
+    // Seed draft from current saved values
+    draftScheme = schemeInput.value || '';
+    draftA      = aInput.value || '';
+    draftB      = bInput.value || '';
+    // Reflect scheme selection
+    schemesWrap.querySelectorAll('.dacron-scheme-card').forEach(function (el) {
+      el.classList.toggle('selected', el.dataset.schemeId === draftScheme);
+    });
+    syncSwatchSelection();
+    // Choose initial tab based on what's saved
+    const initialTab = draftScheme ? 'standard' : (draftA || draftB ? 'custom' : 'standard');
+    modal.querySelectorAll('.dacron-tab').forEach(function (t) {
+      const active = t.dataset.tab === initialTab;
+      t.classList.toggle('active', active);
+      t.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    modal.querySelectorAll('.dacron-tab-panel').forEach(function (p) {
+      p.classList.toggle('active', p.dataset.tabPanel === initialTab);
+    });
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  openBtn.addEventListener('click', openModal);
+  modal.querySelectorAll('[data-dacron-close="1"]').forEach(function (el) {
+    el.addEventListener('click', closeModal);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+  });
+
+  saveBtn.addEventListener('click', function () {
+    if (!draftA || !draftB) {
+      alert('Please choose a color for both A Panels and B Panels (or pick a standard scheme).');
+      return;
+    }
+    schemeInput.value = draftScheme;
+    aInput.value = draftA;
+    bInput.value = draftB;
+    updateDacronDisplay();
+    closeModal();
+    refresh();
+  });
+
+  function updateDacronDisplay() {
+    const a = aInput.value;
+    const b = bInput.value;
+    const s = schemeInput.value;
+    if (!a && !b) {
+      currentValueEl.textContent = 'None selected';
+      currentValueEl.classList.remove('has-selection');
+      return;
+    }
+    let text = '';
+    if (s) {
+      text = 'Scheme ' + s + ' — A: ' + colorName(a) + ' / B: ' + colorName(b);
+    } else {
+      text = 'Custom — A: ' + colorName(a) + ' / B: ' + colorName(b);
+    }
+    currentValueEl.innerHTML = text +
+      ' <span class="mini-chip" style="background:' + colorByKey(a).hex + ';" title="A: ' + colorName(a) + '"></span>' +
+      ' <span class="mini-chip" style="background:' + colorByKey(b).hex + ';" title="B: ' + colorName(b) + '"></span>';
+    currentValueEl.classList.add('has-selection');
+  }
+
+  // Show/hide the Dacron section based on aircraft + XLam state
+  function applyDacronVisibility() {
+    const aircraft = document.querySelector('input[name="aircraft"]:checked');
+    const val = aircraft ? aircraft.value : null;
+    const isSwift = val === 'swift3';
+    const isNynja = val === 'nynja';
+
+    const xlamSwift = document.querySelector('input[value="xlam_swift"]');
+    const xlamNynja = document.querySelector('input[value="xlam_nynja"]');
+    const xlamActive = (isSwift && xlamSwift && xlamSwift.checked) ||
+                       (isNynja && xlamNynja && xlamNynja.checked);
+
+    if (xlamActive) {
+      // Show note, hide picker
+      xlamNote.style.display = 'block';
+      pickerRow.style.display = 'none';
+    } else {
+      xlamNote.style.display = 'none';
+      pickerRow.style.display = '';
+    }
+  }
+
+  // Hook into aircraft + XLam changes
+  document.querySelectorAll('input[name="aircraft"], input[value="xlam_swift"], input[value="xlam_nynja"]').forEach(function (i) {
+    i.addEventListener('change', function () {
+      applyDacronVisibility();
+      refresh();
+    });
+  });
+
+  // Extend refresh() by hooking the quote summary: add dacron selection as a line item ($0)
+  // We do this by patching after refresh runs. Simpler: append to items after refresh.
+  const origRefresh = refresh;
+  window.refresh = function () {
+    origRefresh();
+    // Add a Dacron line if selected AND not overridden by XLam
+    const aircraft = document.querySelector('input[name="aircraft"]:checked');
+    const val = aircraft ? aircraft.value : null;
+    const isSwift = val === 'swift3';
+    const isNynja = val === 'nynja';
+    const xlamSwift = document.querySelector('input[value="xlam_swift"]');
+    const xlamNynja = document.querySelector('input[value="xlam_nynja"]');
+    const xlamActive = (isSwift && xlamSwift && xlamSwift.checked) ||
+                       (isNynja && xlamNynja && xlamNynja.checked);
+    if (xlamActive) return;
+    if (!aInput.value || !bInput.value) return;
+    // Inject a summary line at the end of the items list
+    const li = document.createElement('div');
+    li.className = 'cfg-item';
+    const label = (schemeInput.value ? 'Dacron Scheme ' + schemeInput.value : 'Dacron Custom') +
+                  ' — A: ' + colorName(aInput.value) + ' / B: ' + colorName(bInput.value);
+    li.innerHTML = '<span>' + label + '</span><span>Included</span>';
+    if (items) items.appendChild(li);
+    updateScrollHint();
+  };
+
+  applyDacronVisibility();
+  updateDacronDisplay();
 
   refresh();
 })();

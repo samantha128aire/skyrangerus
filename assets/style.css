@@ -734,3 +734,306 @@ html, body { overflow-x: hidden; max-width: 100%; }
   .submenu li a { padding: 0.6rem 2.5rem; }
   .cart { border-left: 0; }
 }
+
+/* ============================================
+   Dacron Panel Colors — section + modal
+   ============================================ */
+
+/* Section on configure page */
+#dacron-colors-section .dacron-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.btn-choose-dacron {
+  background: var(--accent);
+  color: #fff;
+  border: 0;
+  padding: 0.7rem 1.2rem;
+  border-radius: var(--radius);
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-choose-dacron:hover { background: var(--accent-dark); }
+.dacron-current {
+  font-size: 0.95rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.dacron-current-label { font-weight: 600; }
+.dacron-current-value.has-selection { color: var(--text); }
+.mini-chip {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  border: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+/* Modal */
+.dacron-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.dacron-modal.open { display: flex; }
+.dacron-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(14, 26, 43, 0.65);
+  cursor: pointer;
+}
+.dacron-modal-panel {
+  position: relative;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  max-width: 1000px;
+  width: 100%;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.dacron-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-alt);
+}
+.dacron-modal-header h3 {
+  font-family: var(--font-head);
+  font-size: 1.2rem;
+  color: var(--navy);
+  margin: 0;
+}
+.dacron-modal-close {
+  background: transparent;
+  border: 0;
+  font-size: 1.8rem;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0 0.3rem;
+}
+.dacron-modal-close:hover { color: var(--text); }
+.dacron-modal-footer {
+  padding: 0.8rem 1.25rem;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  background: var(--bg-alt);
+}
+.dacron-modal-footer .btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: 0;
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius);
+  font-family: var(--font-head);
+  font-weight: 600;
+  cursor: pointer;
+}
+.dacron-modal-footer .btn-primary:hover { background: var(--accent-dark); }
+.dacron-modal-footer .btn-secondary {
+  background: #fff;
+  color: var(--text);
+  border: 1px solid var(--line);
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius);
+  font-family: var(--font-head);
+  font-weight: 600;
+  cursor: pointer;
+}
+.dacron-modal-footer .btn-secondary:hover { background: var(--bg-alt); }
+
+/* Tabs */
+.dacron-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--line);
+  padding: 0 1.25rem;
+  background: #fff;
+  flex-shrink: 0;
+}
+.dacron-tab {
+  background: transparent;
+  border: 0;
+  padding: 0.85rem 1.25rem;
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+}
+.dacron-tab:hover { color: var(--text); }
+.dacron-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.dacron-tab-panel {
+  display: none;
+  padding: 1.25rem;
+  overflow-y: auto;
+  flex: 1;
+}
+.dacron-tab-panel.active { display: block; }
+.dacron-help {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+.dacron-note {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-style: italic;
+  margin-top: 1rem;
+}
+
+/* Standard schemes grid */
+.dacron-schemes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.9rem;
+}
+.dacron-scheme-card {
+  background: #fff;
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  padding: 1rem 0.75rem;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.1s;
+  font-family: var(--font-body);
+  color: var(--text);
+  text-align: center;
+}
+.dacron-scheme-card:hover { border-color: var(--accent); }
+.dacron-scheme-card.selected {
+  border-color: var(--accent);
+  background: rgba(47, 107, 211, 0.06);
+  box-shadow: 0 0 0 2px rgba(47, 107, 211, 0.15) inset;
+}
+.dacron-scheme-card .scheme-num {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--accent);
+  margin-bottom: 0.4rem;
+}
+.dacron-scheme-card .scheme-swatches {
+  display: flex;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+.dacron-scheme-card .scheme-swatch {
+  width: 34px;
+  height: 34px;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+}
+.dacron-scheme-card .scheme-label {
+  font-size: 0.85rem;
+  line-height: 1.35;
+  color: var(--muted);
+}
+
+/* Custom picker layout */
+.dacron-custom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+@media (max-width: 800px) {
+  .dacron-custom-grid { grid-template-columns: 1fr; }
+}
+.dacron-diagram img {
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  max-width: 100%;
+  height: auto;
+}
+.dacron-diagram-caption {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.dacron-diagram-caption .dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.dacron-diagram-caption .dot-a { background: #22a5d6; }
+.dacron-diagram-caption .dot-b { background: #f2c81f; }
+
+.dacron-panel-group { margin-bottom: 1.25rem; }
+.dacron-panel-group h4 {
+  font-family: var(--font-head);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 0.5rem;
+}
+.dacron-panel-group .selected-color {
+  color: var(--accent);
+  font-weight: 700;
+}
+.swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+}
+.swatch {
+  position: relative;
+  border: 2px solid var(--line);
+  border-radius: 4px;
+  height: 56px;
+  cursor: pointer;
+  transition: transform 0.1s, border-color 0.15s;
+  overflow: hidden;
+  padding: 0;
+}
+.swatch:hover { transform: scale(1.05); border-color: var(--accent); }
+.swatch.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(47, 107, 211, 0.35);
+  transform: scale(1.05);
+}
+.swatch.is-light { border-color: #ccc; }
+.swatch-label {
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  right: 0;
+  font-size: 0.7rem;
+  color: #fff;
+  text-shadow: 0 0 3px rgba(0,0,0,0.7);
+  font-weight: 600;
+  pointer-events: none;
+}
+.swatch.is-light .swatch-label {
+  color: #333;
+  text-shadow: none;
+}
